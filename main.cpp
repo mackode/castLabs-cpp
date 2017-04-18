@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
 
     // chain tasks signal & slots
     QTimer::singleShot(0, downloadTask.data(), SLOT(run()));
-    QObject::connect(downloadTask.data(), SIGNAL(done()), parseTask.data(), SLOT(run()));
-    QObject::connect(parseTask.data(), SIGNAL(done()), &a, SLOT(quit()));
+    QObject::connect(downloadTask.data(), SIGNAL(done(QObject *)), parseTask.data(), SLOT(run(QObject *)));
+    QObject::connect(parseTask.data(), SIGNAL(done(QObject *)), &a, SLOT(quit()));
 
     return a.exec();
 }

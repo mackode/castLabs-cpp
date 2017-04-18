@@ -5,9 +5,9 @@ ParseTask::ParseTask(const QString &path)
 {
 }
 
-void ParseTask::run()
+void ParseTask::run(QObject *result)
 {
     qDebug() << "Parse task";
 
-    emit done();
+    emit done(NULL);
 }

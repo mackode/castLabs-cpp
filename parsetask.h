@@ -13,7 +13,7 @@ public:
 signals:
 
 public slots:
-    void run();
+    void run(QObject *result);
 
 };
 

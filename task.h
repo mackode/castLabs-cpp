@@ -10,10 +10,10 @@ public:
     explicit Task(QObject *parent = 0);
 
 signals:
-    void done();
+    void done(QObject *result);
 
 public slots:
-    virtual void run() = 0;
+    virtual void run(QObject *result = NULL) = 0;
 
 };
 
