@@ -1,0 +1,23 @@
+#include <QCoreApplication>
+#include <QDebug>
+#include <QSharedPointer>
+#include <QTimer>
+
+#include "downloadtask.h"
+#include "parsetask.h"
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+    QString filename = QString("text0.mp4");
+
+    QSharedPointer<DownloadTask> downloadTask = QSharedPointer<DownloadTask>(new DownloadTask("http://demo.castlabs.com/tmp/" + filename));
+    QSharedPointer<ParseTask> parseTask = QSharedPointer<ParseTask>(new ParseTask(filename));
+
+    // chain tasks signal & slots
+    QTimer::singleShot(0, downloadTask.data(), SLOT(run()));
+    QObject::connect(downloadTask.data(), SIGNAL(done()), parseTask.data(), SLOT(run()));
+    QObject::connect(parseTask.data(), SIGNAL(done()), &a, SLOT(quit()));
+
+    return a.exec();
+}
