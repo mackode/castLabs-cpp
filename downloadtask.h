@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QSharedPointer>
 #include <QNetworkReply>
+#include <QFile>
 
 #include "task.h"
 
@@ -16,6 +17,7 @@ private:
     QSharedPointer<QNetworkAccessManager> networkManager;
     QString url;
     QSharedPointer<QNetworkReply> reply;
+    QSharedPointer<QFile> localFile;
 
 public:
     explicit DownloadTask(const QString &url);
