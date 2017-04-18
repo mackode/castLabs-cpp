@@ -2,12 +2,14 @@
 #include <QDebug>
 #include <QSharedPointer>
 #include <QTimer>
+#import <QLoggingCategory>
 
 #include "downloadtask.h"
 #include "parsetask.h"
 
 int main(int argc, char *argv[])
 {
+    QLoggingCategory::setFilterRules("qt.network.ssl.warning=false");
     QCoreApplication a(argc, argv);
     QString filename = QString("text0.mp4");
 
