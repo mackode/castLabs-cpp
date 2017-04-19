@@ -7,8 +7,14 @@
 class ParseTask : public Task
 {
     Q_OBJECT
+
+private:
+    // contains other boxes
+    static const qint32 MOOF = 0x6d666864;
+    static const qint32 TRAF = 0x6d666864;
+
 public:
-    explicit ParseTask(const QString &path);
+    explicit ParseTask();
 
 signals:
 

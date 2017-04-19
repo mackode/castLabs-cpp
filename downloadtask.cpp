@@ -17,11 +17,11 @@ void DownloadTask::run(QObject *result)
     QFileInfo fileInfo(url);
     QFileInfo appDir(QCoreApplication::applicationDirPath());
 
-    // will close the file
     localFile = QSharedPointer<QFile>(new QFile(appDir.path() + QDir::separator() + fileInfo.fileName()));
     if (!localFile.data()->open(QIODevice::WriteOnly))
     {
         qDebug() << "Unable to open file for writing";
+        emit done(NULL);
         return;
     }
 
@@ -43,5 +43,5 @@ void DownloadTask::error(QNetworkReply::NetworkError err)
 void DownloadTask::finished(QNetworkReply *reply)
 {
     qDebug() << qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z")) << "Successfully loaded file" << qPrintable(url);
-    emit done(NULL);
+    emit done((QObject *)new QString(localFile.data()->fileName()));
 }
