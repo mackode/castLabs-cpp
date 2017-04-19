@@ -3,8 +3,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QDateTime>
-#include <QList>
-#include <QPair>
+#include <QXmlStreamReader>
 
 #include "parsetask.h"
 
@@ -37,7 +36,6 @@ void ParseTask::run(QObject *result)
     qint32 box;
     int headerSize = sizeof(size) + sizeof(box);
     int readBufferSize = 1024;
-    QList<QPair<qint32, qint32>> *mdats = new QList<QPair<qint32, qint32>>();
 
     while(!in.atEnd())
     {
@@ -55,13 +53,15 @@ void ParseTask::run(QObject *result)
         else if(box == ParseTask::MDAT)
         {
             std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Content of mdat box is: ";
+            QXmlStreamReader reader;
 
             // if large shouldn't be read at once into the memory
             qint32 toRead = size - headerSize;
             while(toRead > 0 && !in.atEnd())
             {
-                QByteArray buffer(readBufferSize ? toRead : readBufferSize, Qt::Uninitialized);
+                QByteArray buffer(toRead < readBufferSize ? toRead : readBufferSize, Qt::Uninitialized);
                 int read = in.readRawData(buffer.data(), toRead < readBufferSize ? toRead : readBufferSize);
+
                 toRead -= read;
                 if(read < 0)
                 {
@@ -70,12 +70,22 @@ void ParseTask::run(QObject *result)
                     return;
                 }
 
-                QString content(buffer);
+                QString content = QString::fromUtf8(buffer);
                 std::cout << qUtf8Printable(content);
+                reader.addData(content);
             }
 
             skipped = size;
             std::cout << std::endl;
+
+            // smpte:image
+            while(reader.readNextStartElement())
+            {
+                //if (reader.name() == "smpte:image")
+                //{
+                //    std::cout << "!!! IMAGE " << reader.readElementText().toStdString();
+                //}
+            }
         }
         else
         {
