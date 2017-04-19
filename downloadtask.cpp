@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <iostream>
 #include <QFileInfo>
 #include <QCoreApplication>
 #include <QDir>
@@ -20,7 +20,7 @@ void DownloadTask::run(QObject *result)
     localFile = QSharedPointer<QFile>(new QFile(appDir.path() + QDir::separator() + fileInfo.fileName()));
     if (!localFile.data()->open(QIODevice::WriteOnly))
     {
-        qDebug() << "Unable to open file for writing";
+        std::cout << "Unable to open file for writing" << std::endl;
         emit done(NULL);
         return;
     }
@@ -37,11 +37,11 @@ void DownloadTask::readyRead()
 
 void DownloadTask::error(QNetworkReply::NetworkError err)
 {
-    qDebug() << "Error " << reply.data()->errorString();
+    std::cout << "Error " << reply.data()->errorString().toStdString();
 }
 
 void DownloadTask::finished(QNetworkReply *reply)
 {
-    qDebug() << qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z")) << "Successfully loaded file" << qPrintable(url);
+    std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Successfully loaded file " << url.toStdString() << std::endl;
     emit done((QObject *)new QString(localFile.data()->fileName()));
 }

@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <iostream>
 #include <QSharedPointer>
 #include <QFile>
 #include <QDataStream>
@@ -14,7 +14,7 @@ void ParseTask::run(QObject *result)
 {
     QString *filePath = reinterpret_cast<QString *>(result);
     if (filePath == NULL) {
-        qDebug() << "No source file";
+        std::cout << "No source file" << std::endl;
         delete filePath;
         emit done(NULL);
         return;
@@ -24,7 +24,7 @@ void ParseTask::run(QObject *result)
 
     if (!localFile.data()->open(QIODevice::ReadOnly))
     {
-        qDebug() << "Unable to open file for reading";
+        std::cout << "Unable to open file for reading" << std::endl;
         emit done(NULL);
         return;
     }
@@ -41,7 +41,7 @@ void ParseTask::run(QObject *result)
         in >> box;
 
         char boxType[5] = {((char *)&box)[3], ((char *)&box)[2], ((char *)&box)[1], ((char *)&box)[0], '\0'};
-        qDebug() << qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z")) << "Found box of type" << boxType << "and size" << size;
+        std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Found box of type " << boxType << " and size " << size << std::endl;
 
         int skipped = -1;
         if(box == ParseTask::MOOF || box == ParseTask::TRAF)
@@ -50,10 +50,11 @@ void ParseTask::run(QObject *result)
         }
         else if(box == ParseTask::MDAT)
         {
+            // if large shouldn't be read at once to the memory
             QByteArray buffer(size, Qt::Uninitialized);
             in.readRawData(buffer.data(), size);
             QString content(buffer);
-            qDebug() << qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z")) << "Content of mdat box is:" << qUtf8Printable(content);
+            std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Content of mdat box is: " << qUtf8Printable(content) << std::endl;
             skipped = in.skipRawData(size - headerSize);
         }
         else
@@ -63,7 +64,7 @@ void ParseTask::run(QObject *result)
 
         if(skipped < 0)
         {
-            qDebug() << "Malformed source file";
+            std::cout << "Malformed source file" << std::endl;
             emit done(NULL);
             return;
         }

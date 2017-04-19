@@ -1,5 +1,4 @@
 #include <QCoreApplication>
-#include <QDebug>
 #include <QSharedPointer>
 #include <QTimer>
 #include <QLoggingCategory>
