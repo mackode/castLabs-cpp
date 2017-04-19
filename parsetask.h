@@ -2,6 +2,7 @@
 #define PARSETASK_H
 
 #include <QObject>
+
 #include "task.h"
 
 class ParseTask : public Task

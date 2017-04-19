@@ -62,7 +62,7 @@ void ParseTask::run(QObject *result)
                 toRead -= read;
                 if(read < 0)
                 {
-                    std::cout << "Malformed source file" << std::endl;
+                    std::cout << "Malformed source file. Cannot read data." << std::endl;
                     emit done(NULL);
                     return;
                 }
