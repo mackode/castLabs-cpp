@@ -10,8 +10,8 @@ class ParseTask : public Task
 
 private:
     // contains other boxes
-    static const qint32 MOOF = 0x6d666864;
-    static const qint32 TRAF = 0x6d666864;
+    static const qint32 MOOF = 0x6d6f6f66;
+    static const qint32 TRAF = 0x74726166;
 
 public:
     explicit ParseTask();

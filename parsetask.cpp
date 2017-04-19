@@ -35,20 +35,30 @@ void ParseTask::run(QObject *result)
     qint32 box;
     int headerSize = sizeof(size) + sizeof(box);
 
-    while (!in.atEnd())
+    while(!in.atEnd())
     {
         in >> size;
         in >> box;
 
-        char boxType[4] = {((char *)&box)[3], ((char *)&box)[2], ((char *)&box)[1], ((char *)&box)[0]};
+        char boxType[5] = {((char *)&box)[3], ((char *)&box)[2], ((char *)&box)[1], ((char *)&box)[0], '\0'};
         qDebug() << qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z")) << "Found box of type" << boxType << "and size" << size;
 
-        if (box == ParseTask::MOOF || box == ParseTask::TRAF)
+        int skipped = -1;
+        if(box == ParseTask::MOOF || box == ParseTask::TRAF)
         {
-
+            continue;
+        }
+        else
+        {
+            skipped = in.skipRawData(size - headerSize);
         }
 
-        qDebug() << in.skipRawData(size - headerSize);
+        if(skipped < 0)
+        {
+            qDebug() << "Malformed source file";
+            emit done(NULL);
+            return;
+        }
     }
 
     emit done(NULL);
