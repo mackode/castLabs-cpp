@@ -34,6 +34,7 @@ void ParseTask::run(QObject *result)
     qint32 size;
     qint32 box;
     int headerSize = sizeof(size) + sizeof(box);
+    int readBufferSize = 1024;
 
     while(!in.atEnd())
     {
@@ -50,12 +51,28 @@ void ParseTask::run(QObject *result)
         }
         else if(box == ParseTask::MDAT)
         {
-            // if large shouldn't be read at once to the memory
-            QByteArray buffer(size, Qt::Uninitialized);
-            in.readRawData(buffer.data(), size);
-            QString content(buffer);
-            std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Content of mdat box is: " << qUtf8Printable(content) << std::endl;
-            skipped = in.skipRawData(size - headerSize);
+            std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Content of mdat box is: ";
+
+            // if large shouldn't be read at once into the memory
+            qint32 toRead = size;
+            while(toRead > 0 && !in.atEnd())
+            {
+                QByteArray buffer(readBufferSize, Qt::Uninitialized);
+                int read = in.readRawData(buffer.data(), readBufferSize);
+                toRead -= read;
+                if(read < 0)
+                {
+                    std::cout << "Malformed source file" << std::endl;
+                    emit done(NULL);
+                    return;
+                }
+
+                QString content(buffer);
+                std::cout << qUtf8Printable(content);
+            }
+
+            skipped = size;
+            std::cout << std::endl;
         }
         else
         {

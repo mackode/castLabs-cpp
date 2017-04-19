@@ -42,6 +42,8 @@ void DownloadTask::error(QNetworkReply::NetworkError err)
 
 void DownloadTask::finished(QNetworkReply *reply)
 {
+    // flush file
+    localFile.data()->close();
     std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Successfully loaded file " << url.toStdString() << std::endl;
     emit done((QObject *)new QString(localFile.data()->fileName()));
 }
