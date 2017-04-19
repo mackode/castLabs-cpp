@@ -48,6 +48,14 @@ void ParseTask::run(QObject *result)
         {
             continue;
         }
+        else if(box == ParseTask::MDAT)
+        {
+            QByteArray buffer(size, Qt::Uninitialized);
+            in.readRawData(buffer.data(), size);
+            QString content(buffer);
+            qDebug() << qPrintable(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z")) << "Content of mdat box is:" << qPrintable(content);
+            skipped = in.skipRawData(size - headerSize);
+        }
         else
         {
             skipped = in.skipRawData(size - headerSize);
