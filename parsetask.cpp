@@ -4,6 +4,11 @@
 #include <QDataStream>
 #include <QDateTime>
 #include <QXmlStreamReader>
+#include <QImage>
+#include <QXmlStreamAttribute>
+#include <QFileInfo>
+#include <QCoreApplication>
+#include <QDir>
 
 #include "parsetask.h"
 
@@ -30,6 +35,7 @@ void ParseTask::run(QObject *result)
         return;
     }
 
+    QFileInfo appDir(QCoreApplication::applicationDirPath());
     QDataStream in(localFile.data());
     // header
     qint32 size;
@@ -79,12 +85,35 @@ void ParseTask::run(QObject *result)
             std::cout << std::endl;
 
             // smpte:image
-            while(reader.readNextStartElement())
-            {
-                //if (reader.name() == "smpte:image")
-                //{
-                //    std::cout << "!!! IMAGE " << reader.readElementText().toStdString();
-                //}
+            while (!reader.atEnd()) {
+                reader.readNext();
+
+                if(reader.name() == "image")
+                {
+                    QString filename = "no_file_name";
+                    QXmlStreamAttributes attributes = reader.attributes();
+                    // change to iterator
+                    for (int i = 0; i < attributes.size(); ++i) {
+                        QXmlStreamAttribute attribute = attributes[i];
+                        if(attribute.name().contains("id"))
+                        {
+                            filename = attribute.value().toString() + ".png";
+                            break;
+                        }
+                    }
+
+                    QImage image;
+                    image.loadFromData(QByteArray::fromBase64(reader.readElementText().toLocal8Bit()), "PNG");
+                    image.save(appDir.path() + QDir::separator() + filename, "PNG");
+
+                    std::cout << "extracted image " << filename.toStdString() << std::endl;
+                }
+            }
+
+            if (reader.hasError()) {
+                std::cout << "Malformed source file. XML image parsing error." << std::endl;
+                emit done(NULL);
+                return;
             }
         }
         else
