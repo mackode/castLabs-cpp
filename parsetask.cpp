@@ -3,6 +3,8 @@
 #include <QFile>
 #include <QDataStream>
 #include <QDateTime>
+#include <QList>
+#include <QPair>
 
 #include "parsetask.h"
 
@@ -35,6 +37,7 @@ void ParseTask::run(QObject *result)
     qint32 box;
     int headerSize = sizeof(size) + sizeof(box);
     int readBufferSize = 1024;
+    QList<QPair<qint32, qint32>> *mdats = new QList<QPair<qint32, qint32>>();
 
     while(!in.atEnd())
     {
@@ -87,5 +90,7 @@ void ParseTask::run(QObject *result)
         }
     }
 
+    // flush file
+    localFile.data()->close();
     emit done(NULL);
 }

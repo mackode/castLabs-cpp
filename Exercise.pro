@@ -13,8 +13,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     downloadtask.cpp \
     parsetask.cpp \
-    task.cpp \
-    extracttask.cpp
+    task.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -30,5 +29,4 @@ DEFINES += QT_DEPRECATED_WARNINGS
 HEADERS += \
     downloadtask.h \
     parsetask.h \
-    task.h \
-    extracttask.h
+    task.h
