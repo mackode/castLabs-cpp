@@ -54,11 +54,11 @@ void ParseTask::run(QObject *result)
             std::cout << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " Content of mdat box is: ";
 
             // if large shouldn't be read at once into the memory
-            qint32 toRead = size;
+            qint32 toRead = size - headerSize;
             while(toRead > 0 && !in.atEnd())
             {
-                QByteArray buffer(readBufferSize, Qt::Uninitialized);
-                int read = in.readRawData(buffer.data(), readBufferSize);
+                QByteArray buffer(readBufferSize ? toRead : readBufferSize, Qt::Uninitialized);
+                int read = in.readRawData(buffer.data(), toRead < readBufferSize ? toRead : readBufferSize);
                 toRead -= read;
                 if(read < 0)
                 {
